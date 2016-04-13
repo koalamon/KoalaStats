@@ -1,0 +1,13 @@
+{
+  "name": "koalamon/koalastats",
+  "description": "",
+  "require": {
+    "cilex/cilex": "dev-master",
+    "koalamon/koalamonclient": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Koalamon\\KoalaStats\\": "src/"
+    }
+  }
+}
