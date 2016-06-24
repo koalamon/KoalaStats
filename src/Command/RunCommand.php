@@ -22,7 +22,7 @@ class RunCommand extends \Cilex\Command\Command
             ->addArgument('projectApiKey', InputArgument::REQUIRED, 'The project api key')
             ->addArgument('systemIdentifier', InputArgument::REQUIRED, 'The system identifier')
             ->addArgument('toolIdentifier', InputArgument::REQUIRED, 'The tool identifier')
-            ->addOption('koalamonServer', 's', InputOption::VALUE_OPTIONAL, 'The koalamon server', 'https://monitor.koalamon.com')
+            ->addOption('koalamonServer', 's', InputOption::VALUE_OPTIONAL, 'The koalamon server', 'https://webhook.koalamon.com')
             ->addOption('eventUrl', 'u', InputOption::VALUE_OPTIONAL, 'An url representing this event');
     }
 
