@@ -2,6 +2,7 @@
 
 namespace Koalamon\KoalaStats\Command;
 
+use Cilex\Provider\Console\Command;
 use GuzzleHttp\Client;
 use Koalamon\Client\Reporter\Event;
 use Koalamon\Client\Reporter\Reporter;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RunCommand extends \Cilex\Command\Command
+class RunCommand extends Command 
 {
     protected function configure()
     {
@@ -40,7 +41,7 @@ class RunCommand extends \Cilex\Command\Command
 
         if ($returnCode == 0) {
             $reporter = new Reporter('', $projectApiKey, new Client(), $koalamonServer);
-            $event = new Event($identifier, $systemIdentifier, Event::STATUS_SUCCESS, $toolIdentifier, '', $value[0], $url);
+            $event = new Event($identifier, $systemIdentifier, Event::STATUS_SUCCESS, $toolIdentifier, '', (int)$value[0], $url);
 
             $reporter->sendEvent($event);
 

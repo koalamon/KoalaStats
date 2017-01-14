@@ -2,6 +2,7 @@
 
 namespace Koalamon\KoalaStats\Command;
 
+use Cilex\Provider\Console\Command;
 use GuzzleHttp\Client;
 use Koalamon\Client\Reporter\Event;
 use Koalamon\Client\Reporter\Reporter;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CollectCommand extends \Cilex\Command\Command
+class CollectCommand extends Command
 {
     protected function configure()
     {
@@ -24,7 +25,7 @@ class CollectCommand extends \Cilex\Command\Command
             ->addArgument('toolIdentifier', InputArgument::REQUIRED, 'The tool identifier')
             ->addArgument('interval', InputArgument::REQUIRED, 'The interval')
             ->addArgument('collectionSize', InputArgument::REQUIRED, 'The collectionSize')
-            ->addOption('koalamonServer', 's', InputOption::VALUE_OPTIONAL, 'The koalamon server', 'https://monitor.koalamon.com')
+            ->addOption('koalamonServer', 's', InputOption::VALUE_OPTIONAL, 'The koalamon server', 'https://webhook.koalamon.com')
             ->addOption('message', 'm', InputOption::VALUE_OPTIONAL, 'The event message', '')
             ->addOption('eventUrl', 'u', InputOption::VALUE_OPTIONAL, 'An url representing this event');
     }
@@ -47,6 +48,8 @@ class CollectCommand extends \Cilex\Command\Command
         $index = 0;
         $values = [];
 
+        $reporter = new Reporter('', $projectApiKey, new Client(), $koalamonServer);
+
         while (true) {
             exec($command, $outputArray, $returnCode);
 
@@ -61,7 +64,6 @@ class CollectCommand extends \Cilex\Command\Command
                 $sum = array_sum($values);
                 $average = $sum / $collectionSize;
 
-                $reporter = new Reporter('', $projectApiKey, new Client(), $koalamonServer);
                 $eventMessage = str_replace('#average#', $average, $message);
                 $event = new Event($identifier,
                     $systemIdentifier,
@@ -71,7 +73,12 @@ class CollectCommand extends \Cilex\Command\Command
                     $average,
                     $url);
 
-                $reporter->sendEvent($event);
+                try {
+                    $reporter->sendEvent($event);
+                } catch (\RuntimeException $e) {
+                    $output->writeln('<error>Error: ' . $e->getMessage() . '</error>');
+                    continue;
+                }
                 $output->writeln("\n  <info>Status successfully send (average: " . $average . ").</info>\n");
             }
 
