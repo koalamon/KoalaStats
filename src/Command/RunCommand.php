@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RunCommand extends Command 
+class RunCommand extends Command
 {
     protected function configure()
     {
@@ -24,7 +24,8 @@ class RunCommand extends Command
             ->addArgument('systemIdentifier', InputArgument::REQUIRED, 'The system identifier')
             ->addArgument('toolIdentifier', InputArgument::REQUIRED, 'The tool identifier')
             ->addOption('koalamonServer', 's', InputOption::VALUE_OPTIONAL, 'The koalamon server', 'https://webhook.koalamon.com')
-            ->addOption('eventUrl', 'u', InputOption::VALUE_OPTIONAL, 'An url representing this event');
+            ->addOption('eventUrl', 'u', InputOption::VALUE_OPTIONAL, 'An url representing this event')
+            ->addOption('message', 'm', InputOption::VALUE_OPTIONAL, 'A message for the koalamon event.', '');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -41,7 +42,9 @@ class RunCommand extends Command
 
         if ($returnCode == 0) {
             $reporter = new Reporter('', $projectApiKey, new Client(), $koalamonServer);
-            $event = new Event($identifier, $systemIdentifier, Event::STATUS_SUCCESS, $toolIdentifier, '', (int)$value[0], $url);
+            $currentValue = (int)$value[0];
+            $message = str_replace('##current##', $currentValue, $input->getOption('message'));
+            $event = new Event($identifier, $systemIdentifier, Event::STATUS_SUCCESS, $toolIdentifier, $message, $currentValue, $url);
 
             $reporter->sendEvent($event);
 
